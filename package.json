@@ -1,0 +1,12 @@
+{
+	"name":"jCanvasSample",
+	"version":"0.0.0",
+	"description":"It is just a sandbox to try the features of jCanvas",
+	"email":"yasu.gemini@gmail.com",
+	"url":"https://github.com/y-code/",
+	"repository":
+	{
+		"type":"git",
+		"url":"https://github.com/y-code/jCanvasSample.git"
+	}
+}
