@@ -1,0 +1,173 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>jCanvas Sandbox - Fundamentals</title>
+	<link rel="stylesheet" type="text/css" href="../../bower_components/jquery-ui/themes/base/jquery-ui.css" />
+	<script charset="UTF-8" src="../../bower_components/jquery/dist/jquery.js"></script>
+	<script charset="UTF-8" src="../../bower_components/jquery-ui/jquery-ui.js"></script>
+	<script charset="UTF-8" src="../../bower_components/jcanvas/jcanvas.js"></script>
+	<script charset="UTF-8" src="./js/main.js"></script>
+	<script>
+	var $log = null;
+	function log(msg) {
+		$log.append('<p>'+msg+'</p>');
+	}
+	
+	var $board = null;
+	var $ball = null;
+	var $freeBall = null;
+	var $ballOwner = null;
+	
+	function letBallGo(layer) {
+		if($freeBall)
+			return;
+		
+		if ($ballOwner != null) {
+			log($ballOwner.name + ' released a ball.');
+			
+			$board.removeLayerFromGroup($ball.name, $ballOwner.name);
+			$ballOwner = null;
+		}
+		
+		$freeBall = $ball;
+	}
+	
+	function getBall(layer) {
+		if(!$freeBall)
+			return;
+		if($.inArray(layer.name, $ball.groups) >= 0)
+			return;
+		
+		$ballOwner = layer;
+		
+		log(layer.name + ' got a ball');
+		if($ballOwner != null)
+			letBallGo(layer);
+		$board.addLayerToGroup($freeBall.name, $ballOwner.name);
+		
+		$freeBall = null;
+	}
+	
+	var f_mouseOver = function(layer) {
+		getBall(layer);
+	};
+	
+	$(function() {
+		$log = $("#log");
+		log('Start!');
+		
+		$board = $('canvas');
+		
+		$board
+		// Draw a circle
+		.drawArc({
+		  layer: true,
+		  name: 'player1',
+		  groups: ['players'],
+		  dragGroups: ['player1'],
+		  fillStyle: '#c33',
+		  x: 100, y: 100,
+		  radius: 20,
+		  draggable: true,
+		  bringToFront: true,
+		  mouseover: getBall
+		})
+		// Draw another circle
+		.drawArc({
+		  layer: true,
+		  name: 'player2',
+		  groups: ['players'],
+		  dragGroups: ['player2'],
+		  fillStyle: '#36c',
+		  x: 220, y: 200,
+		  radius: 20,
+		  draggable: true,
+		  bringToFront: true,
+		  mouseover: getBall
+		})
+		// Draw another circle
+		.drawArc({
+		  layer: true,
+		  draggable: true,
+		  bringToFront: true,
+		  name: 'player3',
+		  groups: ['players'],
+		  dragGroups: ['player3'],
+		  fillStyle: '#36c',
+		  x: 300, y: 300,
+		  radius: 20,
+		  mouseover: getBall
+		})
+		// Draw another circle
+		.drawArc({
+		  layer: true,
+		  draggable: true,
+		  bringToFront: true,
+		  name: 'player4',
+		  groups: ['players'],
+		  dragGroups: ['player4'],
+		  fillStyle: '#36c',
+		  x: 300, y: 300,
+		  radius: 20,
+		  mouseover: getBall,
+		  dragstop: function() { $board.moveLayer($ball.name, 1); $board.drawLayer($ball.name); }
+		})
+		// Draw another circle
+		.drawArc({
+		  name: 'ball',
+		  layer: true,
+		  draggable: true,
+		  bringToFront: true,
+		  groups: ['ball-owner'],
+		  fillStyle: '#ff0',
+		  x: 300, y: 250,
+		  radius: 10,
+		  dragstart: function() { letBallGo(); }
+		})
+		// Animate all layers in the group 'circles'
+		.animateLayerGroup('players', {
+		  x: function(layer) {
+			switch(layer.name) {
+				case 'player1':
+					return '+=200';
+				case 'player2':
+					return '-=200';
+				case 'player3':
+					return '-=100';
+				case 'player4':
+					return '+=100';
+			}
+		  },
+		  y: function(layer) {
+			switch(layer.name) {
+				case 'player1':
+					return '+=200';
+				case 'player2':
+					return '-=200';
+				case 'player3':
+					return '-=100';
+				case 'player4':
+					return '-=100';
+			}
+		  }
+		}, 2000);
+		
+		$ball = $("canvas").getLayer('ball');
+	});
+	</script>
+</head>
+<body>
+
+<!--
+<div id="dialog" title="Basic Dialog">
+<p>sample</p>
+</div>
+-->
+
+	<h1>jCanvas Sandbox</h1>
+	<h2>Fundamentals</h2>
+	
+	<canvas width="500px" height="500px" style="border: 1px solid blue;"></canvas>
+	<div id="log" style="background-color: gray; color: white; width: 100%; height: 200px; overflow:auto;">[LOG]</div>
+</body>
+</html>
